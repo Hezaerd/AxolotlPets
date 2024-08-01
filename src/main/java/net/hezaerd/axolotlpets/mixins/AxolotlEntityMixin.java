@@ -2,6 +2,8 @@ package net.hezaerd.axolotlpets.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.hezaerd.axolotlpets.AxolotlEntityAccess;
+import net.hezaerd.axolotlpets.goals.AxolotlFollowOwnerGoal;
 import net.hezaerd.axolotlpets.item.ModItems;
 import net.hezaerd.axolotlpets.utils.Log;
 import net.minecraft.advancement.criterion.Criteria;
@@ -45,7 +47,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(value = AxolotlEntity.class, priority = 1001)
-public abstract class AxolotlEntityMixin extends AnimalEntity {
+public abstract class AxolotlEntityMixin extends AnimalEntity implements AxolotlEntityAccess {
     @Unique
     private static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BYTE);
     @Unique
@@ -60,6 +62,10 @@ public abstract class AxolotlEntityMixin extends AnimalEntity {
     protected void initDataTracker(CallbackInfo ci, @Local(argsOnly = true) DataTracker.Builder builder) {
         builder.add(TAMEABLE_FLAGS, (byte)0);
         builder.add(OWNER_UUID, Optional.empty());
+    }
+
+    protected void initGoals() {
+        this.goalSelector.add(12, new AxolotlFollowOwnerGoal((AxolotlEntity)(Object)this, 0.75, 2, 10, false));
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
