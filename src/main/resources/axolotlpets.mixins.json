@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "net.hezaerd.axolotlpets.mixins",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+      "AxolotlEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
