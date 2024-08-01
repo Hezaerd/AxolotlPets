@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.hezaerd.axolotlpets.AxolotlEntityAccess;
 import net.hezaerd.axolotlpets.goals.AxolotlFollowOwnerGoal;
+import net.hezaerd.axolotlpets.goals.AxolotlSitOnOwnerShoulderGoal;
 import net.hezaerd.axolotlpets.item.ModItems;
 import net.hezaerd.axolotlpets.utils.Log;
 import net.minecraft.advancement.criterion.Criteria;
@@ -12,6 +13,7 @@ import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.SitOnOwnerShoulderGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -36,7 +38,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -53,6 +54,9 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
     @Unique
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
+    private static final int READY_TO_SIT_ON_SHOULDER_COOLDOWN = 100;
+    private int ticks;
+
     protected AxolotlEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
         Log.i("Axoltl is initializing...");
@@ -66,6 +70,7 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
 
     protected void initGoals() {
         this.goalSelector.add(12, new AxolotlFollowOwnerGoal((AxolotlEntity)(Object)this, 0.75, 2, 10, false));
+        this.goalSelector.add(11, new AxolotlSitOnOwnerShoulderGoal((AxolotlEntity)(Object)this));
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
@@ -118,6 +123,11 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
         PassiveEntity child = cir.getReturnValue();
         if (this.isTamed())
             ((AxolotlEntityMixin)child).setOwnerUuid(this.getOwnerUuid());
+    }
+
+    public void tick() {
+        this.ticks++;
+        super.tick();
     }
 
     @Unique
@@ -290,6 +300,26 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
             double f = this.random.nextGaussian() * 0.02D;
             this.getWorld().addParticle(particleEffect, this.getParticleX(1.0D), this.getRandomBodyY() + 0.5D, this.getParticleZ(1.0D), d, e, f);
         }
+    }
+
+    @Override
+    public boolean axolotlpets$mountOnto(ServerPlayerEntity player) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("id", this.getSavedEntityId());
+        this.writeNbt(nbtCompound);
+        if(player.addShoulderEntity(nbtCompound)) {
+            Log.i("Axolotl " + this.getId() + " is now sitting on " + player.getName().getString());
+            this.discard();
+            return true;
+        } else {
+            Log.i("Axolotl " + this.getId() + " failed to sit on " + player.getName().getString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean axolotlpets$isReadyToSitOnPlayer() {
+        return this.ticks > READY_TO_SIT_ON_SHOULDER_COOLDOWN;
     }
 }
 

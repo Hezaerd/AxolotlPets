@@ -42,13 +42,13 @@ public class AxolotlFollowOwnerGoal extends Goal {
     public boolean canStart() {
         LivingEntity livingEntity = ((AxolotlEntityAccess)this.axolotl).axolotlpets$getOwner();
         if (livingEntity == null) {
-            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is null");
+//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is null");
             return false;
         } else if (livingEntity.isSpectator()) {
-            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is spectator");
+//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is spectator");
             return false;
         } else if (this.axolotl.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
-            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because distance is less than min distance");
+//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because distance is less than min distance");
             return false;
         } else {
             this.owner = livingEntity;
@@ -72,7 +72,7 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public void start() {
-        Log.i("Axolotl " + this.axolotl.getId() + " start following owner " + this.owner.getName().getString());
+//        Log.i("Axolotl " + this.axolotl.getId() + " start following owner " + this.owner.getName().getString());
 
         this.updateCountdownTicks = 0;
         this.oldWaterPathfindingPenalty = this.axolotl.getPathfindingPenalty(PathNodeType.WATER);
@@ -81,7 +81,7 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public void stop() {
-        Log.i("Axolotl " + this.axolotl.getId() + " stop following owner " + this.owner.getName().getString());
+//        Log.i("Axolotl " + this.axolotl.getId() + " stop following owner " + this.owner.getName().getString());
 
         this.owner = null;
         this.navigation.stop();
@@ -93,8 +93,6 @@ public class AxolotlFollowOwnerGoal extends Goal {
         this.axolotl.getLookControl().lookAt(this.owner, 10.0F, (float)this.axolotl.getMaxLookPitchChange());
 
         if (--this.updateCountdownTicks <= 0) {
-            Log.i("AxolotlFollowOwnerGoal tick");
-
             this.updateCountdownTicks = this.getTickCount(10);
             if (this.canFollow()) {
                 if (this.axolotl.squaredDistanceTo(this.owner) >= 144.0D) { // 12 blocks
