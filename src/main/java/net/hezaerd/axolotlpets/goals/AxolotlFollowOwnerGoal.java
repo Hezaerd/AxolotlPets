@@ -1,7 +1,6 @@
 package net.hezaerd.axolotlpets.goals;
 
 import net.hezaerd.axolotlpets.AxolotlEntityAccess;
-import net.hezaerd.axolotlpets.utils.Log;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
