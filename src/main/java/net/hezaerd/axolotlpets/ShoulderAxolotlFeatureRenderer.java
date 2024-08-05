@@ -1,5 +1,6 @@
 package net.hezaerd.axolotlpets;
 
+import com.google.common.collect.Maps;
 import net.hezaerd.axolotlpets.utils.Log;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
@@ -16,9 +17,28 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+
+import java.util.Map;
+import java.util.Locale;
 
 public class ShoulderAxolotlFeatureRenderer<T extends PlayerEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
     private final AxolotlEntityModel model;
+
+    private static final Map<AxolotlEntity.Variant, Identifier> TEXTURES = (Map)Util.make(Maps.newHashMap(), (variants) -> {
+        AxolotlEntity.Variant[] var1 = AxolotlEntity.Variant.values();
+        int var2 = var1.length;
+
+        for(int var3 = 0; var3 < var2; ++var3) {
+            AxolotlEntity.Variant variant = var1[var3];
+            variants.put(variant, Identifier.ofVanilla(String.format(Locale.ROOT, "textures/entity/axolotl/axolotl_%s.png", variant.getName())));
+        }
+
+    });
+
+    private Identifier getTexture(AxolotlEntity.Variant variant) {
+        return (Identifier)TEXTURES.get(variant);
+    }
 
     public ShoulderAxolotlFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context, EntityModelLoader loader) {
         super(context);
@@ -56,8 +76,7 @@ public class ShoulderAxolotlFeatureRenderer<T extends PlayerEntity> extends Feat
 
             // TODO: GET THE TEXTURE FROM AxolotlEntityRenderer
             AxolotlEntity.Variant variant = AxolotlEntity.Variant.byId(nbtCompound.getInt("Variant"));
-            Identifier texture = Identifier.ofVanilla("textures/entity/axolotl/axolotl_lucy.png"); // TEMP: Use the lucy texture
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(texture));
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.model.getLayer(this.getTexture(variant)));
 
             // Render the axolotl
             ((AxolotlEntityModelAccessor)(Object)model).axolotlpets$poseOnShoulder(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, limbAngle, limbDistance, headYaw, headPitch);
