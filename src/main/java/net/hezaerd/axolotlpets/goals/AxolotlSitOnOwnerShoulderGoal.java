@@ -1,6 +1,6 @@
 package net.hezaerd.axolotlpets.goals;
 
-import net.hezaerd.axolotlpets.AxolotlEntityAccess;
+import net.hezaerd.axolotlpets.AxolotlEntityAccessor;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,13 +16,13 @@ public class AxolotlSitOnOwnerShoulderGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        ServerPlayerEntity player = (ServerPlayerEntity)((AxolotlEntityAccess)this.axolotl).axolotlpets$getOwner();
+        ServerPlayerEntity player = (ServerPlayerEntity)((AxolotlEntityAccessor)this.axolotl).axolotlpets$getOwner();
         boolean bl = player != null
                 && !player.isSpectator()
                 && !player.getAbilities().flying
                 && !player.inPowderSnow;
 
-        return (bl && ((AxolotlEntityAccess)this.axolotl).axolotlpets$isReadyToSitOnPlayer());
+        return (bl && ((AxolotlEntityAccessor)this.axolotl).axolotlpets$isReadyToSitOnPlayer());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class AxolotlSitOnOwnerShoulderGoal extends Goal {
 
     @Override
     public void start() {
-        this.owner = (ServerPlayerEntity)((AxolotlEntityAccess)this.axolotl).axolotlpets$getOwner();
+        this.owner = (ServerPlayerEntity)((AxolotlEntityAccessor)this.axolotl).axolotlpets$getOwner();
         this.mounted = false;
     }
 
@@ -40,7 +40,7 @@ public class AxolotlSitOnOwnerShoulderGoal extends Goal {
     public void tick() {
         if (!this.mounted && !this.axolotl.isLeashed()) {
             if (this.axolotl.getBoundingBox().intersects(this.owner.getBoundingBox())) {
-                this.mounted = ((AxolotlEntityAccess)this.axolotl).axolotlpets$mountOnto(this.owner);
+                this.mounted = ((AxolotlEntityAccessor)this.axolotl).axolotlpets$mountOnto(this.owner);
             }
         }
     }

@@ -2,7 +2,7 @@ package net.hezaerd.axolotlpets.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.hezaerd.axolotlpets.AxolotlEntityAccess;
+import net.hezaerd.axolotlpets.AxolotlEntityAccessor;
 import net.hezaerd.axolotlpets.goals.AxolotlFollowOwnerGoal;
 import net.hezaerd.axolotlpets.goals.AxolotlSitOnOwnerShoulderGoal;
 import net.hezaerd.axolotlpets.item.ModItems;
@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(value = AxolotlEntity.class, priority = 1001)
-public abstract class AxolotlEntityMixin extends AnimalEntity implements AxolotlEntityAccess {
+public abstract class AxolotlEntityMixin extends AnimalEntity implements AxolotlEntityAccessor {
     @Unique
     private static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BYTE);
     @Unique

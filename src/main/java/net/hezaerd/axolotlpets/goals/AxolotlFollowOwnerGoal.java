@@ -1,6 +1,6 @@
 package net.hezaerd.axolotlpets.goals;
 
-import net.hezaerd.axolotlpets.AxolotlEntityAccess;
+import net.hezaerd.axolotlpets.AxolotlEntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -39,7 +39,7 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        LivingEntity livingEntity = ((AxolotlEntityAccess)this.axolotl).axolotlpets$getOwner();
+        LivingEntity livingEntity = ((AxolotlEntityAccessor)this.axolotl).axolotlpets$getOwner();
         if (livingEntity == null) {
             return false;
         } else if (livingEntity.isSpectator()) {
