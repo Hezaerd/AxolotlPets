@@ -3,7 +3,9 @@
 	"package": "net.hezaerd.axolotlpets.mixins",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-      "AxolotlEntityMixin"
+  		"AxolotlEntityMixin",
+		"AxolotlEntityModelMixin",
+		"PlayerEntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
