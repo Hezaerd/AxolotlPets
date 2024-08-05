@@ -39,15 +39,15 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        LivingEntity livingEntity = ((AxolotlEntityAccessor)this.axolotl).axolotlpets$getOwner();
-        if (livingEntity == null) {
+        LivingEntity owner = ((AxolotlEntityAccessor)this.axolotl).axolotlpets$getOwner();
+        if (owner == null) {
             return false;
-        } else if (livingEntity.isSpectator()) {
+        } else if (((AxolotlEntityAccessor)this.axolotl).axolotlpets$cannotFollowOwner()) {
             return false;
-        } else if (this.axolotl.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
+        } else if (this.axolotl.squaredDistanceTo(owner) < (double) (this.minDistance * this.minDistance)) {
             return false;
         } else {
-            this.owner = livingEntity;
+            this.owner = owner;
             return true;
         }
     }
@@ -55,16 +55,11 @@ public class AxolotlFollowOwnerGoal extends Goal {
     public boolean shouldContinue() {
         if (this.navigation.isIdle()) {
             return false;
-        } else if (!this.canFollow()) {
-            return false;
         } else {
-            return !(this.axolotl.squaredDistanceTo(this.owner) <= (double) (this.maxDistance * this.maxDistance));
+            return !((AxolotlEntityAccessor) this.axolotl).axolotlpets$cannotFollowOwner() && this.axolotl.squaredDistanceTo(this.owner) > (double) (this.maxDistance * this.maxDistance);
         }
     }
 
-    public boolean canFollow() {
-        return !this.axolotl.hasVehicle() || !this.axolotl.isLeashed();
-    }
 
     @Override
     public void start() {
@@ -82,25 +77,30 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public void tick() {
-        this.axolotl.getLookControl().lookAt(this.owner, 10.0F, (float)this.axolotl.getMaxLookPitchChange());
+        boolean bl = ((AxolotlEntityAccessor)this.axolotl).axolotlpets$shouldTryTeleportToOwner();
+        if(!bl) {
+            this.axolotl.getLookControl().lookAt(this.owner, 10.0F, (float)this.axolotl.getMaxLookPitchChange());
+        }
 
         if (--this.updateCountdownTicks <= 0) {
             this.updateCountdownTicks = this.getTickCount(10);
-            if (this.canFollow()) {
-                if (this.axolotl.squaredDistanceTo(this.owner) >= 144.0D) { // 12 blocks
-                    this.tryTeleport();
+            if (!this.axolotl.isLeashed() && !this.axolotl.hasVehicle()) {
+                if (bl) {
+                    this.tryTeleportToOwner();
                 } else {
                     this.navigation.startMovingTo(this.owner, this.speed);
                 }
             }
         }
+
+
     }
 
     private int getRandomInt(int min, int max) {
         return this.axolotl.getRandom().nextInt(max - min + 1) + min;
     }
 
-    private void tryTeleport() {
+    private void tryTeleportToOwner() {
         BlockPos blockPos = this.owner.getBlockPos();
 
         for (int i = 0; i < 10; ++i) {

@@ -9,6 +9,8 @@ public interface AxolotlEntityAccessor {
     boolean axolotlpets$mountOnto(ServerPlayerEntity player);
     boolean axolotlpets$isReadyToSitOnPlayer();
 
-    boolean isTamed();
+    boolean axolotlpets$cannotFollowOwner();
+    boolean axolotlpets$shouldTryTeleportToOwner();
 
+    boolean isTamed();
 }

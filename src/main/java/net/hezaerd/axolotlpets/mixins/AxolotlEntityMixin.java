@@ -50,8 +50,10 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
     private static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BYTE);
     @Unique
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    @Unique
+    private boolean sitting;
 
-    private static final int READY_TO_SIT_ON_SHOULDER_COOLDOWN = 100;
+    private static final int READY_TO_SIT_ON_SHOULDER_COOLDOWN = 100; // 5 seconds
     private int ticks;
 
     protected AxolotlEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
@@ -65,8 +67,8 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
     }
 
     protected void initGoals() {
-        this.goalSelector.add(12, new AxolotlFollowOwnerGoal((AxolotlEntity)(Object)this, 0.75, 2, 10, false));
         this.goalSelector.add(11, new AxolotlSitOnOwnerShoulderGoal((AxolotlEntity)(Object)this));
+        this.goalSelector.add(12, new AxolotlFollowOwnerGoal((AxolotlEntity)(Object)this, 0.7, 10, 2, false));
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
@@ -75,6 +77,7 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
             nbt.putUuid("Owner", this.getOwnerUuid());
         }
 
+        nbt.putBoolean("Sitting", this.sitting);
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
@@ -97,6 +100,9 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
                 Log.w("Failed to get owner UUID: " + e.getMessage());
             }
         }
+
+        this.sitting = nbt.getBoolean("Sitting");
+        this.setSitting(this.sitting);
     }
 
     @Inject(method = "method_57305", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/passive/AxolotlEntity;getBrain()Lnet/minecraft/entity/ai/brain/Brain;", shift = At.Shift.BEFORE))
@@ -121,11 +127,6 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
             ((AxolotlEntityMixin)child).setOwnerUuid(this.getOwnerUuid());
     }
 
-    public void tick() {
-        this.ticks++;
-        super.tick();
-    }
-
     @Unique
     public void setTamed(boolean tamed) {
         byte b = this.dataTracker.get(TAMEABLE_FLAGS);
@@ -146,6 +147,23 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
     @Unique
     protected void onTamed(boolean tamed) {
         Log.i("Axolotl " + this.getId() + " is now " + (tamed ? "tamed" : "wild"));
+    }
+
+    @Unique
+    private void setSitting(boolean sitting) {
+        byte b = this.dataTracker.get(TAMEABLE_FLAGS);
+        if (sitting) {
+            this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1)); // 0000 0001
+            this.sitting = true;
+        } else {
+            this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2)); // 1111 1110
+            this.sitting = false;
+        }
+    }
+
+    @Unique
+    public boolean isSitting() {
+        return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0; // 0000 0001
     }
 
     @Unique
@@ -249,7 +267,6 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
             }
 
             if (this.isTamed() && this.getHealth() < this.getMaxHealth()) {
-                Log.i("SERVER - Axolotl " + this.getId() + " is tamed");
                 Log.i("SERVER - Axolotl " + this.getId() + " is being fed to heal");
                 this.eat(player, player.getActiveHand(), itemStack);
                 this.heal(7.0F);
@@ -266,7 +283,26 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
             return ActionResult.SUCCESS;
         }
 
+        if (itemStack.isEmpty() && this.isOwner(player)) {
+            if(player.isSneaking()) {
+                Log.i("SERVER - " + player.getName().getString() + " is picking up Axolotl " + this.getId());
+                if(this.axolotlpets$mountOnto((ServerPlayerEntity) player)) {
+                    Log.i("SERVER - " + player.getName().getString() + " successfully picked up Axolotl " + this.getId());
+                    return ActionResult.SUCCESS;
+                }
+            } else {
+                this.setSitting(!this.isSitting());
+                Log.i("SERVER - Axolotl " + this.getId() + " is now " + (this.isSitting() ? "sitting" : "standing"));
+                return ActionResult.SUCCESS;
+            }
+        }
+
         return super.interactMob(player, hand);
+    }
+
+    public void tick() {
+        this.ticks++;
+        super.tick();
     }
 
     @Unique
@@ -287,8 +323,6 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
 
     @Unique
     public void tamingParticles(boolean success) {
-        Log.i("Taming particles: " + success);
-
         ParticleEffect particleEffect = success ? ParticleTypes.HEART : ParticleTypes.SMOKE;
         for (int i = 0; i < 7; ++i) {
             double d = this.random.nextGaussian() * 0.02D;
@@ -316,6 +350,18 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
     @Override
     public boolean axolotlpets$isReadyToSitOnPlayer() {
         return this.ticks > READY_TO_SIT_ON_SHOULDER_COOLDOWN;
+    }
+
+    @Override
+    public boolean axolotlpets$cannotFollowOwner() {
+        LivingEntity owner = this.axolotlpets$getOwner();
+        return this.isSitting() || this.hasVehicle() || this.mightBeLeashed() || owner != null && owner.isSpectator();
+    }
+
+    @Override
+    public boolean axolotlpets$shouldTryTeleportToOwner() {
+        LivingEntity owner = this.axolotlpets$getOwner();
+        return owner != null && (this.squaredDistanceTo(owner) >= 144.0D); // 12 blocks
     }
 }
 
