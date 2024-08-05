@@ -41,13 +41,10 @@ public class AxolotlFollowOwnerGoal extends Goal {
     public boolean canStart() {
         LivingEntity livingEntity = ((AxolotlEntityAccess)this.axolotl).axolotlpets$getOwner();
         if (livingEntity == null) {
-//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is null");
             return false;
         } else if (livingEntity.isSpectator()) {
-//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because owner is spectator");
             return false;
         } else if (this.axolotl.squaredDistanceTo(livingEntity) < (double) (this.minDistance * this.minDistance)) {
-//            Log.i("Axolotl " + this.axolotl.getId() + " can't start following owner because distance is less than min distance");
             return false;
         } else {
             this.owner = livingEntity;
@@ -71,8 +68,6 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public void start() {
-//        Log.i("Axolotl " + this.axolotl.getId() + " start following owner " + this.owner.getName().getString());
-
         this.updateCountdownTicks = 0;
         this.oldWaterPathfindingPenalty = this.axolotl.getPathfindingPenalty(PathNodeType.WATER);
         this.axolotl.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
@@ -80,8 +75,6 @@ public class AxolotlFollowOwnerGoal extends Goal {
 
     @Override
     public void stop() {
-//        Log.i("Axolotl " + this.axolotl.getId() + " stop following owner " + this.owner.getName().getString());
-
         this.owner = null;
         this.navigation.stop();
         this.axolotl.setPathfindingPenalty(PathNodeType.WATER, this.oldWaterPathfindingPenalty);

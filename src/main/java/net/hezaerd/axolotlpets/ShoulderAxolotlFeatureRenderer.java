@@ -45,9 +45,6 @@ public class ShoulderAxolotlFeatureRenderer<T extends PlayerEntity> extends Feat
     ) {
         NbtCompound nbtCompound = leftShoulder ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
         EntityType.get(nbtCompound.getString("id")).filter(type -> type == EntityType.AXOLOTL).ifPresent(type -> {
-
-            Log.i("Rendering axolotl on shoulder" + (leftShoulder ? "left" : "right"));
-
             matrices.push();
 
             // Scale down the axolotl

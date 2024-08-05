@@ -56,7 +56,6 @@ public abstract class AxolotlEntityMixin extends AnimalEntity implements Axolotl
 
     protected AxolotlEntityMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
-        Log.i("Axoltl is initializing...");
     }
 
     @Inject(method = "initDataTracker", at = @At("TAIL"))

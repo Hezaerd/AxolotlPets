@@ -1,8 +1,6 @@
 package net.hezaerd.axolotlpets.goals;
 
 import net.hezaerd.axolotlpets.AxolotlEntityAccess;
-import net.hezaerd.axolotlpets.utils.Log;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,10 +22,6 @@ public class AxolotlSitOnOwnerShoulderGoal extends Goal {
                 && !player.getAbilities().flying
                 && !player.inPowderSnow;
 
-        if (bl && ((AxolotlEntityAccess)this.axolotl).axolotlpets$isReadyToSitOnPlayer()) {
-            Log.i("Axolotl " + this.axolotl.getId() + " can start sitting on owner");
-        }
-
         return (bl && ((AxolotlEntityAccess)this.axolotl).axolotlpets$isReadyToSitOnPlayer());
     }
 
@@ -46,7 +40,6 @@ public class AxolotlSitOnOwnerShoulderGoal extends Goal {
     public void tick() {
         if (!this.mounted && !this.axolotl.isLeashed()) {
             if (this.axolotl.getBoundingBox().intersects(this.owner.getBoundingBox())) {
-                Log.i("Axolotl " + this.axolotl.getId() + " is intersecting with owner " + this.owner.getName().getString());
                 this.mounted = ((AxolotlEntityAccess)this.axolotl).axolotlpets$mountOnto(this.owner);
             }
         }
