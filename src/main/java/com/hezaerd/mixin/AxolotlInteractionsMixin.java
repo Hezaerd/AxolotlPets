@@ -15,11 +15,16 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Optional;
 
 @Mixin(value = AxolotlEntity.class, priority = 1500)
 public abstract class AxolotlInteractionsMixin extends AnimalEntity {
+
+    @Shadow public abstract boolean isBreedingItem(ItemStack stack);
+
+    @Shadow protected abstract void eat(PlayerEntity player, Hand hand, ItemStack stack);
 
     protected AxolotlInteractionsMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -30,7 +35,9 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
 
+        // Taming related interactions
         if (((AxolotlTameableAccessor)this).betteraxolotls$isTamed()) {
+            // Owner only interactions
             boolean isOwner = ((AxolotlTameableAccessor)this).betteraxolotls$getOwner() == player;
             if (isOwner) {
                 Optional<ActionResult> result = Bucketable.tryBucket(player, hand, (AxolotlEntity)(Object)this);
@@ -51,6 +58,28 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
             }
         }
         
-        return ActionResult.PASS;
+        // Breeding interaction
+        if (this.isBreedingItem(itemStack)) {
+            int breedingAge = this.getBreedingAge();
+            if (!this.getWorld().isClient && breedingAge == 0 && this.canEat()) {
+                this.eat(player, hand, itemStack);
+                this.lovePlayer(player);
+                this.playEatSound();
+                return ActionResult.SUCCESS_SERVER;
+            }
+            
+            if (this.isBaby()) {
+                this.eat(player, hand, itemStack);
+                this.growUp(toGrowUpAge(-breedingAge), true);
+                this.playEatSound();
+                return ActionResult.SUCCESS;
+            }
+            
+            if (this.getWorld().isClient) {
+                return ActionResult.CONSUME;
+            }
+        }
+        
+        return super.interactMob(player, hand);
     }
 }
