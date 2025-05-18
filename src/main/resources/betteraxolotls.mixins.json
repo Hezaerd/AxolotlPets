@@ -2,7 +2,13 @@
 	"required": true,
 	"package": "com.hezaerd.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [],
+	"mixins": [
+		"AxolotlTameableMixin",
+		"AxolotlDespawnMixin",
+		"AxolotlDeathMixin",
+		"AxolotlNbtMixin",
+		"AxolotlInteractionsMixin"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}
