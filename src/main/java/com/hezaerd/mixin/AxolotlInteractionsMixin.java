@@ -2,20 +2,22 @@ package com.hezaerd.mixin;
 
 import com.hezaerd.AxolotlTameableAccessor;
 import com.hezaerd.item.ModItems;
-import com.hezaerd.utils.Log;
 import net.minecraft.entity.Bucketable;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Optional;
 
@@ -81,5 +83,31 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
         }
         
         return super.interactMob(player, hand);
+    }
+    
+    @Override
+    public void handleStatus(byte status) {
+        if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
+            this.showEmoteParticle(true);
+        } else if (status == EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES) {
+            this.showEmoteParticle(false);
+        } else {
+            super.handleStatus(status);
+        }
+    }
+    
+    @Unique
+    private void showEmoteParticle(boolean positive) {
+        ParticleEffect particleEffect = ParticleTypes.HEART;
+        if (!positive) {
+            particleEffect = ParticleTypes.SMOKE;
+        }
+
+        for (int i = 0; i < 7; i++) {
+            double d = this.random.nextGaussian() * 0.02;
+            double e = this.random.nextGaussian() * 0.02;
+            double f = this.random.nextGaussian() * 0.02;
+            this.getWorld().addParticleClient(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+        }
     }
 }
