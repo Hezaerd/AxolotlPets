@@ -9,6 +9,9 @@
     "AxolotlNbtMixin",
     "AxolotlShoulderMixin",
     "AxolotlTameableMixin",
+    "PlayerEntityMixin"
+  ],
+  "client": [
     "PlayerEntityRendererMixin",
     "PlayerEntityRenderStateMixin"
   ],
