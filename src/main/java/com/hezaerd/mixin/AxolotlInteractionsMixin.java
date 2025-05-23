@@ -3,7 +3,6 @@ package com.hezaerd.mixin;
 import com.hezaerd.accessor.AxolotlShoulderAccessor;
 import com.hezaerd.accessor.AxolotlTameableAccessor;
 import com.hezaerd.item.ModItems;
-import com.hezaerd.utils.Log;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -15,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -56,7 +57,22 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                 ) {
                     if (!this.getWorld().isClient) {
                         ServerPlayerEntity serverPlayer = (ServerPlayerEntity)player;
-                        ((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer);
+                        if(((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer)) {
+                            SoundEvent soundEvent = this.isSubmergedInWater() ? 
+                                    SoundEvents.ENTITY_AXOLOTL_SPLASH : 
+                                    SoundEvents.ENTITY_BAT_TAKEOFF;
+                            this.getWorld().playSound(
+                                    null,
+                                    this.getX(), this.getY(), this.getZ(),
+                                    soundEvent,
+                                    this.getSoundCategory(),
+                                    1.0F,
+                                    1.0F + (this.getWorld().random.nextFloat() - this.getWorld().random.nextFloat()) * 0.2F
+                            );
+                            return ActionResult.SUCCESS_SERVER;
+                        } else {
+                            return ActionResult.FAIL;
+                        }
                     }
                 }
             }
@@ -68,6 +84,20 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
             
             if (!this.getWorld().isClient && itemStack.isOf(ModItems.AXOLOTL_TREAT) && ((AxolotlTameableAccessor)this).betteraxolotls$isTameable()) {
                 itemStack.decrementUnlessCreative(1, player);
+                if (!this.isSilent()) {
+                    SoundEvent soundEvent = this.isSubmergedInWater() ? 
+                            SoundEvents.ENTITY_AXOLOTL_IDLE_WATER : 
+                            SoundEvents.ENTITY_AXOLOTL_IDLE_AIR;
+                    
+                    this.getWorld().playSound(
+                            null, 
+                            this.getX(), this.getY(), this.getZ(),
+                            soundEvent,
+                            this.getSoundCategory(),
+                            1.0F,
+                            1.0F + (this.getWorld().random.nextFloat() - this.getWorld().random.nextFloat()) * 0.2F
+                    );
+                }
                 ((AxolotlTameableAccessor)this).betteraxolotls$tryTame(player);
                 return ActionResult.SUCCESS_SERVER;
             }
