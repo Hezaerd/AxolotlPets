@@ -3,20 +3,20 @@
 	"id": "betteraxolotls",
 	"version": "${version}",
 	"name": "betteraxolotls",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Axolotls are now your loyal, shoulder-riding pals! Tame these adorable amphibians and bring them on all your adventures.",
 	"authors": [
-		"Me!"
+		"Hezaerd"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/betteraxolotls/icon.png",
+	"icon": "assets/betteraxolotls/icon.jpg",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.hezaerd.Betteraxolotls"
+			"com.hezaerd.BetterAxolotls"
 		]
 	},
 	"mixins": [
