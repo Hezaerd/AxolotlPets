@@ -1,6 +1,6 @@
 package com.hezaerd.mixin;
 
-import com.hezaerd.AxolotlTameableAccessor;
+import com.hezaerd.accessor.AxolotlTameableAccessor;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.passive.AxolotlEntity;
 import org.spongepowered.asm.mixin.Mixin;

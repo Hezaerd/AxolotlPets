@@ -1,7 +1,9 @@
 package com.hezaerd.mixin;
 
-import com.hezaerd.AxolotlTameableAccessor;
+import com.hezaerd.accessor.AxolotlShoulderAccessor;
+import com.hezaerd.accessor.AxolotlTameableAccessor;
 import com.hezaerd.item.ModItems;
+import com.hezaerd.utils.Log;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -12,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -45,6 +48,16 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                 Optional<ActionResult> result = Bucketable.tryBucket(player, hand, (AxolotlEntity)(Object)this);
                 if (result.isPresent()) {
                     return result.get();
+                }
+                
+                // Shoulder Axolotl
+                if (itemStack.isEmpty() && ((AxolotlShoulderAccessor)this).betteraxolotls$isReadyToSitOnPlayer()) {
+                    Log.i(player.getDisplayName() + "Interacting handfree with Axolotl: " + this.getUuidAsString());
+                    
+                    if (!this.getWorld().isClient) {
+                        ServerPlayerEntity serverPlayer = (ServerPlayerEntity)player;
+                        boolean success = ((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer);
+                    }
                 }
             }
         } else {

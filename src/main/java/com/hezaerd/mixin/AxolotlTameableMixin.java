@@ -1,6 +1,6 @@
 package com.hezaerd.mixin;
 
-import com.hezaerd.AxolotlTameableAccessor;
+import com.hezaerd.accessor.AxolotlTameableAccessor;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.EntityStatuses;
@@ -16,7 +16,6 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,11 +60,10 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
     public boolean betteraxolotls$isTameable() {
         boolean isBaby = this.isBaby();
         boolean enoughAir = this.getAir() > this.getMaxAir() / 2;
-        boolean isInWater = this.isTouchingWater();
         boolean isTamed = this.betteraxolotls$isTamed();
         boolean canEat = this.canEat();
         
-        return !isBaby && enoughAir && isInWater && !isTamed && canEat;
+        return !isBaby && enoughAir && !isTamed && canEat;
     }
     
     @Override

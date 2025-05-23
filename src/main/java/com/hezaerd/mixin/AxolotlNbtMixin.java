@@ -1,7 +1,6 @@
 package com.hezaerd.mixin;
 
-import com.hezaerd.AxolotlTameableAccessor;
-import com.hezaerd.utils.Log;
+import com.hezaerd.accessor.AxolotlTameableAccessor;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Mixin(value = AxolotlEntity.class, priority = 1500)
 public abstract class AxolotlNbtMixin extends AnimalEntity {

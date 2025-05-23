@@ -1,6 +1,6 @@
 package com.hezaerd.mixin;
 
-import com.hezaerd.AxolotlTameableAccessor;
+import com.hezaerd.accessor.AxolotlTameableAccessor;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AnimalEntity;

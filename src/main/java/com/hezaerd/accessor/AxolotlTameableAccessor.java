@@ -1,4 +1,4 @@
-package com.hezaerd;
+package com.hezaerd.accessor;
 
 import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.entity.LivingEntity;
