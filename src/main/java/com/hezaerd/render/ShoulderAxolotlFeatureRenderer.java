@@ -54,10 +54,10 @@ public class ShoulderAxolotlFeatureRenderer extends FeatureRenderer<PlayerEntity
         matrices.push();
 
         // Position the axolotl on the shoulder
-        matrices.translate(isLeft ? 0.4D : -0.4D, state.isInSneakingPose ? -1.15D : -1.45D, 0.0D);
+        matrices.translate(isLeft ? 0.4D : -0.4D, state.isInSneakingPose ? -0.48D : -0.73D, 0.0D);
 
         // Scale down the axolotl since they're quite large
-        matrices.scale(0.5f, 0.5f, 0.5f);
+        matrices.scale(0.6f, 0.6f, 0.6f);
 
         // Set up the axolotl render state
         this.axolotlState.age = state.age;
