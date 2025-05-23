@@ -51,12 +51,12 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                 }
                 
                 // Shoulder Axolotl
-                if (itemStack.isEmpty() && ((AxolotlShoulderAccessor)this).betteraxolotls$isReadyToSitOnPlayer()) {
-                    Log.i(player.getDisplayName() + "Interacting handfree with Axolotl: " + this.getUuidAsString());
-                    
+                if (itemStack.isEmpty() && ((AxolotlShoulderAccessor)this).betteraxolotls$isReadyToSitOnPlayer()
+                        && !this.isBaby() && !player.isSubmergedInWater()
+                ) {
                     if (!this.getWorld().isClient) {
                         ServerPlayerEntity serverPlayer = (ServerPlayerEntity)player;
-                        boolean success = ((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer);
+                        ((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer);
                     }
                 }
             }
