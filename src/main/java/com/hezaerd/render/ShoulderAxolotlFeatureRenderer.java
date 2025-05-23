@@ -2,7 +2,9 @@ package com.hezaerd.render;
 
 import com.google.common.collect.Maps;
 import com.hezaerd.accessor.PlayerEntityRenderStateAccessor;
+import com.hezaerd.utils.Log;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -22,16 +24,9 @@ public class ShoulderAxolotlFeatureRenderer extends FeatureRenderer<PlayerEntity
     private final AxolotlEntityRenderState axolotlState = new AxolotlEntityRenderState();
 
     private static final Map<AxolotlEntity.Variant, Identifier> AXOLOTL_TEXTURES =
-            Util.make(Maps.<AxolotlEntity.Variant, Identifier>newHashMap(), variants -> {
+            Util.make(Maps.newHashMap(), variants -> {
                 for (AxolotlEntity.Variant variant : AxolotlEntity.Variant.values()) {
-                    variants.put(
-                            variant,
-                            Identifier.ofVanilla(String.format(
-                                    Locale.ROOT,
-                                    "textures/entity/axolotl/axolotl_%s.png",
-                                    variant.getId()
-                            ))
-                    );
+                    variants.put(variant, Identifier.ofVanilla(String.format(Locale.ROOT, "textures/entity/axolotl/axolotl_" + variant.getId() + ".png")));
                 }
             });
     
@@ -59,11 +54,7 @@ public class ShoulderAxolotlFeatureRenderer extends FeatureRenderer<PlayerEntity
         matrices.push();
 
         // Position the axolotl on the shoulder
-        matrices.translate(
-                isLeft ? 0.3f : -0.3f,
-                state.isInSneakingPose ? -1.2f : -1.4f,
-                0.1f
-        );
+        matrices.translate(isLeft ? 0.4D : -0.4D, state.isInSneakingPose ? -1.15D : -1.45D, 0.0D);
 
         // Scale down the axolotl since they're quite large
         matrices.scale(0.5f, 0.5f, 0.5f);
@@ -80,8 +71,8 @@ public class ShoulderAxolotlFeatureRenderer extends FeatureRenderer<PlayerEntity
         
         this.model.setAngles(this.axolotlState);
         
-        Identifier texture = getAxolotlTexture(variant);
-        this.model.render(matrices, vertexConsumers.getBuffer(this.model.getLayer(texture)), light, OverlayTexture.DEFAULT_UV);
+        RenderLayer layer = this.model.getLayer(getAxolotlTexture(variant));
+        this.model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV);
         
         matrices.pop();
     }

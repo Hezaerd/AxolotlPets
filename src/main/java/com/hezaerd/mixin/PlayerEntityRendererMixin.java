@@ -10,6 +10,7 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AxolotlEntity;
+import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,6 +18,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(value = PlayerEntityRenderer.class, priority = 1001)
 public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityRenderState, PlayerEntityModel> {
@@ -41,13 +44,13 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Nullable
     private static AxolotlEntity.Variant getShoulderAxolotlVariant(AbstractClientPlayerEntity player, boolean left) {
         NbtCompound nbtCompound = left ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
-        if (nbtCompound.isEmpty()) {
-            return null;
-        } else {
+        if (!nbtCompound.isEmpty()) {
             EntityType<?> entityType = nbtCompound.get("id", EntityType.CODEC).orElse(null);
-            return entityType == EntityType.AXOLOTL
-                    ? nbtCompound.get("Variant", AxolotlEntity.Variant.CODEC).orElse(AxolotlEntity.Variant.LUCY)
-                    : null;
+            if (entityType == EntityType.AXOLOTL) {
+                Optional<Integer> variantId = nbtCompound.getInt("Variant");
+                return AxolotlEntity.Variant.byIndex(variantId.orElse(0));
+            }
         }
+        return null;
     }
 }
