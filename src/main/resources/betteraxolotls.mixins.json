@@ -3,6 +3,7 @@
   "package": "com.hezaerd.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AxolotlAiMixin",
     "AxolotlDeathMixin",
     "AxolotlDespawnMixin",
     "AxolotlInteractionsMixin",
