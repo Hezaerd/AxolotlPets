@@ -8,11 +8,18 @@
 		"Hezaerd"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/betteraxolotls",
+		"sources": "https://github.com/Hezaerd/BetterAxolotls"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/betteraxolotls/icon.jpg",
+	"custom":{
+		"modmenu": {
+			"links": {
+				"Website": "https://hezaerd.com"
+			}
+		}
+	},
+	"license": "MIT",
+	"icon": "assets/betteraxolotls/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
