@@ -39,27 +39,27 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
+        
+        AxolotlTameableAccessor tameableAccessor = (AxolotlTameableAccessor) this;
+        AxolotlShoulderAccessor shoulderAccessor = (AxolotlShoulderAccessor) this;
 
         // Taming related interactions
-        if (((AxolotlTameableAccessor)this).betteraxolotls$isTamed()) {
+        if (tameableAccessor.betteraxolotls$isTamed()) {
             // Owner only interactions
-            boolean isOwner = ((AxolotlTameableAccessor)this).betteraxolotls$getOwner() == player;
+            boolean isOwner = tameableAccessor.betteraxolotls$getOwner() == player;
             if (isOwner) {
                 Optional<ActionResult> result = Bucketable.tryBucket(player, hand, (AxolotlEntity)(Object)this);
                 if (result.isPresent()) {
                     return result.get();
                 }
                 
-                // Shoulder Axolotl
-                if (itemStack.isEmpty() && ((AxolotlShoulderAccessor)this).betteraxolotls$isReadyToSitOnPlayer()
-                        && !this.isBaby() && !player.isSubmergedInWater()
-                ) {
+                // Empty-hand interactions
+                if (itemStack.isEmpty() && shoulderAccessor.betteraxolotls$isReadyToSitOnPlayer() && !this.isBaby() && !player.isSubmergedInWater()) {
                     if (!this.getWorld().isClient) {
-                        ServerPlayerEntity serverPlayer = (ServerPlayerEntity)player;
-                        if(((AxolotlShoulderAccessor)this).betteraxolotls$mountOnto(serverPlayer)) {
-                            SoundEvent soundEvent = this.isSubmergedInWater() ? 
-                                    SoundEvents.ENTITY_AXOLOTL_SPLASH : 
+                        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+                        if (shoulderAccessor.betteraxolotls$mountOnto(serverPlayer)) {
+                            SoundEvent soundEvent = this.isSubmergedInWater() ?
+                                    SoundEvents.ENTITY_AXOLOTL_SPLASH :
                                     SoundEvents.ENTITY_BAT_TAKEOFF;
                             this.getWorld().playSound(
                                     null,
@@ -82,7 +82,7 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                 return result.get();
             }
             
-            if (!this.getWorld().isClient && itemStack.isOf(ModItems.AXOLOTL_TREAT) && ((AxolotlTameableAccessor)this).betteraxolotls$isTameable()) {
+            if (!this.getWorld().isClient && itemStack.isOf(ModItems.AXOLOTL_TREAT) && tameableAccessor.betteraxolotls$isTameable()) {
                 itemStack.decrementUnlessCreative(1, player);
                 if (!this.isSilent()) {
                     SoundEvent soundEvent = this.isSubmergedInWater() ? 
@@ -98,7 +98,7 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                             1.0F + (this.getWorld().random.nextFloat() - this.getWorld().random.nextFloat()) * 0.2F
                     );
                 }
-                ((AxolotlTameableAccessor)this).betteraxolotls$tryTame(player);
+                tameableAccessor.betteraxolotls$tryTame(player);
                 return ActionResult.SUCCESS_SERVER;
             }
         }

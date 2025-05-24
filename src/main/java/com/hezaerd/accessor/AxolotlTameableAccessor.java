@@ -20,9 +20,4 @@ public interface AxolotlTameableAccessor {
     @Nullable LazyEntityReference<LivingEntity> betteraxolotls$getOwnerReference();
     @Nullable LivingEntity betteraxolotls$getOwner();
     void betteraxolotls$setOwner(@Nullable LivingEntity owner);
-    
-    boolean betteraxolotls$isSitting();
-    void betteraxolotls$setSitting(boolean sitting);
-    boolean betteraxolotls$isInSittingPose();
-    void betteraxolotls$setInSittingPose(boolean inSittingPose);
 }

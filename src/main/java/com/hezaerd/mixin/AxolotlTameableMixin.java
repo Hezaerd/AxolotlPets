@@ -38,8 +38,8 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
     
     @Unique private boolean sitting;
     
-    @Unique private final double untamedMaxHealth = 14.0D;
-    @Unique private final double tamedMaxHealth = 40.0D;
+    @Unique private static final double untamedMaxHealth = 14.0D;
+    @Unique private static final double tamedMaxHealth = 40.0D;
     
     protected AxolotlTameableMixin(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -72,7 +72,6 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
             this.betteraxolotls$setTamedBy(player);
             this.navigation.stop();
             this.setTarget(null);
-            this.betteraxolotls$setSitting(true);
             this.getWorld().sendEntityStatus((AxolotlEntity)(Object)this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
         } else {
             this.getWorld().sendEntityStatus((AxolotlEntity)(Object)this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
@@ -107,13 +106,13 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
         if (this.betteraxolotls$isTamed()) {
             EntityAttributeInstance maxHealthInstance = this.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (maxHealthInstance != null) {
-                maxHealthInstance.setBaseValue(this.tamedMaxHealth);
-                this.setHealth((float)this.tamedMaxHealth);                
+                maxHealthInstance.setBaseValue(tamedMaxHealth);
+                this.setHealth((float) tamedMaxHealth);                
             }
         } else {
             EntityAttributeInstance maxHealthInstance = this.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (maxHealthInstance != null) 
-                maxHealthInstance.setBaseValue(this.untamedMaxHealth);
+                maxHealthInstance.setBaseValue(untamedMaxHealth);
         }
     }
     
@@ -135,30 +134,5 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
     @Override
     public void betteraxolotls$setOwner(@Nullable LivingEntity owner) {
         this.dataTracker.set(OWNER_UUID, Optional.ofNullable(owner).map(LazyEntityReference::new));
-    }
-    
-    @Override
-    public boolean betteraxolotls$isSitting() {
-        return this.sitting;
-    }
-    
-    @Override
-    public boolean betteraxolotls$isInSittingPose() {
-        return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
-    }
-    
-    @Override
-    public void betteraxolotls$setSitting(boolean sitting) {
-        this.sitting = sitting;
-    }
-    
-    @Override
-    public void betteraxolotls$setInSittingPose(boolean inSittingPose) {
-        byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-        if (inSittingPose) {
-            this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1));
-        } else {
-            this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2));
-        }
     }
 }

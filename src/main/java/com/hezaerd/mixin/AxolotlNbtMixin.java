@@ -33,8 +33,6 @@ public abstract class AxolotlNbtMixin extends AnimalEntity {
         if (lazyEntityReference != null) {
             lazyEntityReference.writeNbt(tag, "Owner");
         }
-        
-        tag.putBoolean("Sitting", ((AxolotlTameableAccessor)this).betteraxolotls$isSitting());
     }
     
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
@@ -52,9 +50,6 @@ public abstract class AxolotlNbtMixin extends AnimalEntity {
             this.dataTracker.set(((AxolotlTameableAccessor)this).betteraxolotls$getOwnerReferenceData(), Optional.empty());
             ((AxolotlTameableAccessor)this).betteraxolotls$setTamed(false, true);
         }
-        
-        ((AxolotlTameableAccessor)this).betteraxolotls$setSitting(tag.getBoolean("Sitting", false));
-        ((AxolotlTameableAccessor)this).betteraxolotls$setInSittingPose(((AxolotlTameableAccessor)this).betteraxolotls$isSitting());
     }
 
     @Inject(method = "copyDataToStack", at = @At("TAIL"))
