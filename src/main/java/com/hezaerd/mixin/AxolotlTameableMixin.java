@@ -68,7 +68,7 @@ public abstract class AxolotlTameableMixin extends AnimalEntity implements Axolo
     
     @Override
     public void betteraxolotls$tryTame(PlayerEntity player) {
-        if (this.random.nextInt(5) == 0) {
+        if (this.random.nextInt(3) == 0) {
             this.betteraxolotls$setTamedBy(player);
             this.navigation.stop();
             this.setTarget(null);

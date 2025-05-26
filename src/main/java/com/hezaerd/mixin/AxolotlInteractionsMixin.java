@@ -2,17 +2,16 @@ package com.hezaerd.mixin;
 
 import com.hezaerd.accessor.AxolotlShoulderAccessor;
 import com.hezaerd.accessor.AxolotlTameableAccessor;
-import com.hezaerd.item.ModItems;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -82,7 +81,7 @@ public abstract class AxolotlInteractionsMixin extends AnimalEntity {
                 return result.get();
             }
             
-            if (!this.getWorld().isClient && itemStack.isOf(ModItems.AXOLOTL_TREAT) && tameableAccessor.betteraxolotls$isTameable()) {
+            if (!this.getWorld().isClient && itemStack.isIn(ItemTags.AXOLOTL_FOOD) && tameableAccessor.betteraxolotls$isTameable()) {
                 itemStack.decrementUnlessCreative(1, player);
                 if (!this.isSilent()) {
                     SoundEvent soundEvent = this.isSubmergedInWater() ? 

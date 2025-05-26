@@ -1,6 +1,7 @@
 {
   "replace": true,
   "values": [
-    "betteraxolotls:axolotl_treat"
+    "minecraft:tropical_fish_bucket",
+    "minecraft:tropical_fish"
   ]
 }

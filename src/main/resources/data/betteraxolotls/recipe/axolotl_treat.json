@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:smelting",
-  "category": "food",
-  "ingredient": "minecraft:tropical_fish",
-  "result": {
-    "id": "betteraxolotls:axolotl_treat"
-  },
-  "experience": 0.1
-}
